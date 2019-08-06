@@ -5,6 +5,7 @@ package org.conreality.sdk.android;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.AudioTrack;
 import android.os.Binder;
 import android.os.Bundle;
@@ -24,6 +25,15 @@ import java.util.UUID;
 public final class HeadsetService extends Service implements TextToSpeech.OnInitListener {
   private static final String TAG = "ConrealitySDK";
   private static final String TTS_ENGINE = "com.google.android.tts";
+
+  /** Bind to the service, creating it if needed. */
+  public static boolean bind(final @NonNull Context context, final @NonNull ServiceConnection conn) {
+    final boolean ok = context.bindService(new Intent(context, HeadsetService.class), conn, Context.BIND_AUTO_CREATE);
+    if (!ok) {
+      context.unbindService(conn);
+    }
+    return ok;
+  }
 
   public final class LocalBinder extends Binder {
     public @NonNull HeadsetService getService() {
