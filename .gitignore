@@ -9,3 +9,7 @@
 
 # rst2html outputs
 *.html
+
+# Android artifacts
+.gradle/
+build/
