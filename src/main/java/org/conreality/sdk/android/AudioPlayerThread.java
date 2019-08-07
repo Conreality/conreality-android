@@ -10,6 +10,7 @@ import android.os.Process;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,8 +21,7 @@ import java.nio.channels.ClosedByInterruptException;
 import java.util.Objects;
 
 /** AudioPlayerThread */
-public final class AudioPlayerThread extends Thread {
-  private static final String TAG = "ConrealitySDK";
+public final class AudioPlayerThread extends ConrealityThread {
   private static final int SAMPLE_RATE = 44100; // Hz
   private static final int CHANNEL_MASK = AudioFormat.CHANNEL_OUT_MONO;
   private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
@@ -71,6 +71,7 @@ public final class AudioPlayerThread extends Thread {
     }
   }
 
+  @WorkerThread
   @Override
   public void run() {
     Log.d(TAG, "AudioPlayerThread.start");

@@ -8,13 +8,13 @@ import android.media.MediaRecorder;
 import android.os.Process;
 import android.util.Log;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
 
 /** AudioRecorderThread */
-public final class AudioRecorderThread extends Thread {
-  private static final String TAG = "ConrealitySDK";
+public final class AudioRecorderThread extends ConrealityThread {
   private static final int AUDIO_SOURCE = MediaRecorder.AudioSource.DEFAULT;
   private static final int SAMPLE_RATE = 44100; // Hz
   private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
@@ -35,6 +35,7 @@ public final class AudioRecorderThread extends Thread {
     this.recorder = new AudioRecord(AUDIO_SOURCE, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, bufferSize);
   }
 
+  @WorkerThread
   @Override
   public void run() {
     Log.d(TAG, "AudioRecorderThread.start");
