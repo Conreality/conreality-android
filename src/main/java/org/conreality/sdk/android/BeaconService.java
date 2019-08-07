@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -14,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
+import java.util.Objects;
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
@@ -26,6 +28,19 @@ public final class BeaconService extends Service implements DefaultLifecycleObse
   private static final String TAG = "ConrealitySDK";
   private static final String IBEACON_LAYOUT = "m:0-3=4c000215,i:4-19,i:20-21,i:22-23,p:24-24";
   private static final String ALTBEACON_LAYOUT = BeaconParser.ALTBEACON_LAYOUT;
+
+  /** Bind to the service, creating it if needed. */
+  public static boolean bind(final @NonNull Context context,
+                             final @NonNull ServiceConnection conn) {
+    Objects.requireNonNull(context);
+    Objects.requireNonNull(conn);
+
+    final boolean ok = context.bindService(new Intent(context, BeaconService.class), conn, Context.BIND_AUTO_CREATE);
+    if (!ok) {
+      context.unbindService(conn);
+    }
+    return ok;
+  }
 
   public final class LocalBinder extends Binder {
     public @NonNull BeaconService getService() {
