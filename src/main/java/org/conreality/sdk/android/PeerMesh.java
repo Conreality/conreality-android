@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Random;
 
 /** PeerMesh */
-public class PeerMesh {
+public final class PeerMesh {
   private static final String TAG = "PeerMesh";
   private static final Strategy P2P_STRATEGY = Strategy.P2P_CLUSTER;
   private static final String P2P_SERVICE = "app.conreality";
@@ -249,12 +249,7 @@ public class PeerMesh {
     @Override
     public void onPayloadReceived(final @NonNull String endpointID, final Payload payload) {
       Log.d(TAG, String.format("PayloadCallback.onPayloadReceived: endpointID=%s payload={id=%d, type=%d}", endpointID, payload.getId(), payload.getType()));
-      registry.peers.compute(endpointID, (peerID, peer) -> {
-        if (peer != null) {
-          peer.updateLastSeen();
-        }
-        return peer;
-      });
+      registry.updateLastSeen(endpointID);
     }
 
     @Override

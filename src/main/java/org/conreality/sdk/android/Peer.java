@@ -2,14 +2,12 @@
 
 package org.conreality.sdk.android;
 
-import java.time.Instant;
-
 /** Peer */
 public class Peer {
   public final String id;
   public String name;
   public PeerStatus status;
-  public Instant lastSeen;
+  public long lastSeen;
 
   public Peer(final String id, final String name, final PeerStatus status) {
     this.id = id;
@@ -19,7 +17,7 @@ public class Peer {
   }
 
   public void updateLastSeen() {
-    this.lastSeen = Instant.now();
+    this.lastSeen = System.currentTimeMillis();
   }
 
   public boolean isConnected() {

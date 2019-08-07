@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 /** PeerRegistry */
-public class PeerRegistry {
-  public Map<String, Peer> peers = new HashMap<String, Peer>();
+public final class PeerRegistry {
+  private Map<String, Peer> peers = new HashMap<String, Peer>();
 
   public PeerRegistry() {}
 
@@ -19,26 +19,30 @@ public class PeerRegistry {
   }
 
   public void add(final @NonNull Peer peer) {
-    this.peers.putIfAbsent(peer.id, peer);
+    this.peers.put(peer.id, peer);
   }
 
   public void setStatus(final @NonNull String peerID, final @NonNull PeerStatus peerStatus) {
-    this.peers.compute(peerID, (peerID_, peer) -> {
-      if (peer != null) {
-        peer.status = peerStatus;
-        peer.updateLastSeen();
-      }
-      return peer;
-    });
+    final Peer peer = this.peers.get(peerID);
+    if (peer != null) {
+      peer.status = peerStatus;
+      peer.updateLastSeen();
+    }
   }
 
   public void setName(final @NonNull String peerID, final @NonNull String peerName) {
-    this.peers.compute(peerID, (peerID_, peer) -> {
-      if (peer != null) {
-        peer.name = peerName;
-      }
-      return peer;
-    });
+    final Peer peer = this.peers.get(peerID);
+    if (peer != null) {
+      peer.name = peerName;
+      peer.updateLastSeen();
+    }
+  }
+
+  public void updateLastSeen(final @NonNull String peerID) {
+    final Peer peer = this.peers.get(peerID);
+    if (peer != null) {
+      peer.updateLastSeen();
+    }
   }
 
   public List<String> getConnectedPeerIDs() {

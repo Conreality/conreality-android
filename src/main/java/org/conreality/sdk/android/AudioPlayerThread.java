@@ -4,6 +4,7 @@ package org.conreality.sdk.android;
 
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Process;
 import android.util.Log;
@@ -44,23 +45,29 @@ public final class AudioPlayerThread extends Thread {
     }
     this.buffer = new byte[bufferSize];
 
+    final AudioAttributes audioAttributes =
+        new AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+            .build();
+    final AudioFormat audioFormat =
+        new AudioFormat.Builder()
+            .setSampleRate(SAMPLE_RATE)
+            .setChannelMask(CHANNEL_MASK)
+            .setEncoding(AUDIO_FORMAT)
+            .build();
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) { // Android 6.0+
       this.player = new AudioTrack.Builder()
-          .setTransferMode(AudioTrack.MODE_STREAM)
+          .setAudioAttributes(audioAttributes)
+          .setAudioFormat(audioFormat)
           .setBufferSizeInBytes(bufferSize)
-          .setAudioAttributes(new AudioAttributes.Builder()
-              .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-              .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-              .build())
-          .setAudioFormat(new AudioFormat.Builder()
-              .setSampleRate(SAMPLE_RATE)
-              .setChannelMask(CHANNEL_MASK)
-              .setEncoding(AUDIO_FORMAT)
-              .build())
+          .setTransferMode(AudioTrack.MODE_STREAM)
+          //.setSessionId(AudioManager.AUDIO_SESSION_ID_GENERATE)
           .build();
     }
     else { // Android 5.0+
-      this.player = null; // TODO: legacy support
+      this.player = new AudioTrack(audioAttributes, audioFormat, bufferSize,
+          AudioTrack.MODE_STREAM, AudioManager.AUDIO_SESSION_ID_GENERATE);
     }
   }
 
