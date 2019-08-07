@@ -51,6 +51,10 @@ dependencies {
   implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
   implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
 
+  // See: https://github.com/ReactiveX/RxJava/releases
+  compileOnly 'io.reactivex.rxjava2:rxjava:2.2.11'
+  compileOnly 'io.reactivex.rxjava2:rxandroid:2.1.1'
+
   // See: https://developers.google.com/android/guides/setup
   implementation 'com.google.android.gms:play-services-nearby:17.0.0'
 
@@ -58,7 +62,5 @@ dependencies {
   implementation 'org.altbeacon:android-beacon-library:2.16.2'
 
   // See: https://github.com/polarofficial/polar-ble-sdk/releases
-  compileOnly fileTree(dir: 'libs', include: 'polar-ble-sdk.aar')
-  compileOnly 'io.reactivex.rxjava2:rxjava:2.2.11'
-  compileOnly 'io.reactivex.rxjava2:rxandroid:2.1.1'
+  compileOnly fileTree(dir: 'libs', include: 'polar-ble-sdk.aar') // requires rxandroid, rxjava2
 }
