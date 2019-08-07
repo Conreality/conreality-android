@@ -5,6 +5,7 @@ package org.conreality.sdk.android;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,10 +17,24 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /** PeerService */
 public final class PeerService extends Service {
   private static final String TAG = "PeerService";
+
+  /** Bind to the service, creating it if needed. */
+  public static boolean bind(final @NonNull Context context,
+                             final @NonNull ServiceConnection conn) {
+    Objects.requireNonNull(context);
+    Objects.requireNonNull(conn);
+
+    final boolean ok = context.bindService(new Intent(context, PeerService.class), conn, Context.BIND_AUTO_CREATE);
+    if (!ok) {
+      context.unbindService(conn);
+    }
+    return ok;
+  }
 
   public final class LocalBinder extends Binder {
     public @NonNull PeerService getService() {
