@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /** HeadsetService */
@@ -27,7 +28,11 @@ public final class HeadsetService extends Service implements TextToSpeech.OnInit
   private static final String TTS_ENGINE = "com.google.android.tts";
 
   /** Bind to the service, creating it if needed. */
-  public static boolean bind(final @NonNull Context context, final @NonNull ServiceConnection conn) {
+  public static boolean bind(final @NonNull Context context,
+                             final @NonNull ServiceConnection conn) {
+    Objects.requireNonNull(context);
+    Objects.requireNonNull(conn);
+
     final boolean ok = context.bindService(new Intent(context, HeadsetService.class), conn, Context.BIND_AUTO_CREATE);
     if (!ok) {
       context.unbindService(conn);
@@ -49,6 +54,7 @@ public final class HeadsetService extends Service implements TextToSpeech.OnInit
   /** Implements Service#onBind(). */
   @Override
   public @NonNull IBinder onBind(final @NonNull Intent intent) {
+    assert(intent != null);
     return this.binder;
   }
 
@@ -114,6 +120,8 @@ public final class HeadsetService extends Service implements TextToSpeech.OnInit
 
   /** Plays an audio file. */
   public boolean playFile(final @NonNull String file) {
+    Objects.requireNonNull(file);
+
     try {
       (new AudioPlayerThread(new File(file))).start();
       return true;
@@ -131,7 +139,7 @@ public final class HeadsetService extends Service implements TextToSpeech.OnInit
 
   /** Synthesizes speech from the given text message. */
   public boolean speak(final @NonNull String message) {
-    assert(message != null);
+    Objects.requireNonNull(message);
 
     if (Log.isLoggable(TAG, Log.DEBUG)) {
       Log.d(TAG, String.format("HeadsetService.speak: message=\"%s\"", message));
@@ -141,6 +149,7 @@ public final class HeadsetService extends Service implements TextToSpeech.OnInit
       if (this.ttsQueue == null) return false; // nothing to be done
       return ttsQueue.add(message);
     }
+
     return this._speak(message, TextToSpeech.QUEUE_FLUSH);
   }
 
@@ -154,7 +163,7 @@ public final class HeadsetService extends Service implements TextToSpeech.OnInit
     return this.ttsEngine.stop() == TextToSpeech.SUCCESS;
   }
 
-  private boolean _speak(final @NonNull String message, int queueMode) {
+  private boolean _speak(final @NonNull String message, final int queueMode) {
     assert(message != null);
 
     final @NonNull String utteranceID = UUID.randomUUID().toString();

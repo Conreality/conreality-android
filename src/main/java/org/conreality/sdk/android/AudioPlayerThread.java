@@ -7,6 +7,8 @@ import android.media.AudioFormat;
 import android.media.AudioTrack;
 import android.os.Process;
 import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
+import java.util.Objects;
 
 /** AudioPlayerThread */
 public final class AudioPlayerThread extends Thread {
@@ -22,19 +25,25 @@ public final class AudioPlayerThread extends Thread {
   private static final int CHANNEL_MASK = AudioFormat.CHANNEL_OUT_MONO;
   private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
 
-  final InputStream input;
-  byte[] buffer;
-  AudioTrack player;
+  final @NonNull InputStream input;
+  @Nullable byte[] buffer;
+  @Nullable AudioTrack player;
 
-  public AudioPlayerThread(final File path) throws FileNotFoundException {
-    this(new FileInputStream(path));
+  public AudioPlayerThread(final @NonNull File path) throws FileNotFoundException {
+    this(new FileInputStream(Objects.requireNonNull(path)));
   }
 
-  public AudioPlayerThread(final InputStream input) {
+  public AudioPlayerThread(final @NonNull InputStream input) {
     super("AudioPlayerThread");
+
+    this.input = Objects.requireNonNull(input);
+
     final int bufferSize = AudioTrack.getMinBufferSize(SAMPLE_RATE, CHANNEL_MASK, AUDIO_FORMAT);
-    this.input = input;
+    if (Log.isLoggable(TAG, Log.DEBUG)) {
+      Log.d(TAG, "AudioPlayerThread: bufferSize=" + bufferSize);
+    }
     this.buffer = new byte[bufferSize];
+
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) { // Android 6.0+
       this.player = new AudioTrack.Builder()
           .setTransferMode(AudioTrack.MODE_STREAM)
@@ -52,9 +61,6 @@ public final class AudioPlayerThread extends Thread {
     }
     else { // Android 5.0+
       this.player = null; // TODO: legacy support
-    }
-    if (Log.isLoggable(TAG, Log.DEBUG)) {
-      Log.d(TAG, "AudioPlayerThread: bufferSize=" + bufferSize);
     }
   }
 

@@ -7,6 +7,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Process;
 import android.util.Log;
+import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
@@ -19,17 +20,19 @@ public final class AudioRecorderThread extends Thread {
   private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
   private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
 
-  ByteBuffer buffer;
-  AudioRecord recorder;
+  @Nullable ByteBuffer buffer;
+  @Nullable AudioRecord recorder;
 
   public AudioRecorderThread() {
     super("AudioRecorderThread");
+
     final int bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
-    this.buffer = ByteBuffer.allocateDirect(bufferSize);
-    this.recorder = new AudioRecord(AUDIO_SOURCE, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, bufferSize);
     if (Log.isLoggable(TAG, Log.DEBUG)) {
       Log.d(TAG, "AudioRecorderThread: bufferSize=" + bufferSize);
     }
+    this.buffer = ByteBuffer.allocateDirect(bufferSize);
+
+    this.recorder = new AudioRecord(AUDIO_SOURCE, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, bufferSize);
   }
 
   @Override
