@@ -22,10 +22,6 @@ import java.util.Objects;
 
 /** AudioPlayerThread */
 public final class AudioPlayerThread extends ConrealityThread {
-  private static final int SAMPLE_RATE = 44100; // Hz
-  private static final int CHANNEL_MASK = AudioFormat.CHANNEL_OUT_MONO;
-  private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
-
   final @NonNull InputStream input;
   @Nullable byte[] buffer;
   @Nullable AudioTrack player;
@@ -39,7 +35,9 @@ public final class AudioPlayerThread extends ConrealityThread {
 
     this.input = Objects.requireNonNull(input);
 
-    final int bufferSize = AudioTrack.getMinBufferSize(SAMPLE_RATE, CHANNEL_MASK, AUDIO_FORMAT);
+    final int bufferSize = AudioTrack.getMinBufferSize(
+        AudioConfig.SAMPLE_RATE, AudioConfig.CHANNEL_MASK, AudioConfig.AUDIO_FORMAT);
+
     if (Log.isLoggable(TAG, Log.DEBUG)) {
       Log.d(TAG, "AudioPlayerThread: bufferSize=" + bufferSize);
     }
@@ -47,14 +45,14 @@ public final class AudioPlayerThread extends ConrealityThread {
 
     final AudioAttributes audioAttributes =
         new AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+            .setUsage(AudioConfig.USAGE)
+            .setContentType(AudioConfig.CONTENT_TYPE)
             .build();
     final AudioFormat audioFormat =
         new AudioFormat.Builder()
-            .setSampleRate(SAMPLE_RATE)
-            .setChannelMask(CHANNEL_MASK)
-            .setEncoding(AUDIO_FORMAT)
+            .setSampleRate(AudioConfig.SAMPLE_RATE)
+            .setChannelMask(AudioConfig.CHANNEL_MASK)
+            .setEncoding(AudioConfig.AUDIO_FORMAT)
             .build();
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) { // Android 6.0+
       this.player = new AudioTrack.Builder()

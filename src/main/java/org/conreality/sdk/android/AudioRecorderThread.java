@@ -15,24 +15,22 @@ import java.nio.channels.ClosedByInterruptException;
 
 /** AudioRecorderThread */
 public final class AudioRecorderThread extends ConrealityThread {
-  private static final int AUDIO_SOURCE = MediaRecorder.AudioSource.DEFAULT;
-  private static final int SAMPLE_RATE = 44100; // Hz
-  private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
-  private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
-
   @Nullable ByteBuffer buffer;
   @Nullable AudioRecord recorder;
 
   public AudioRecorderThread() {
     super("AudioRecorderThread");
 
-    final int bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
+    final int bufferSize = AudioRecord.getMinBufferSize(AudioConfig.SAMPLE_RATE,
+        AudioConfig.CHANNEL_CONFIG, AudioConfig.AUDIO_FORMAT);
+
     if (Log.isLoggable(TAG, Log.DEBUG)) {
       Log.d(TAG, "AudioRecorderThread: bufferSize=" + bufferSize);
     }
     this.buffer = ByteBuffer.allocateDirect(bufferSize);
 
-    this.recorder = new AudioRecord(AUDIO_SOURCE, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, bufferSize);
+    this.recorder = new AudioRecord(AudioConfig.SOURCE, AudioConfig.SAMPLE_RATE,
+        AudioConfig.CHANNEL_CONFIG, AudioConfig.AUDIO_FORMAT, bufferSize);
   }
 
   @WorkerThread
