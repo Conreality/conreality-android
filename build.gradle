@@ -40,8 +40,6 @@ android {
 }
 
 dependencies {
-  compileOnly fileTree(dir: 'libs', include: '*.jar')
-
   // See: https://developer.android.com/jetpack/androidx/releases/core
   implementation 'androidx.core:core:1.0.2'
 
@@ -58,4 +56,9 @@ dependencies {
 
   // See: https://github.com/AltBeacon/android-beacon-library/releases
   implementation 'org.altbeacon:android-beacon-library:2.16.2'
+
+  // See: https://github.com/polarofficial/polar-ble-sdk/releases
+  compileOnly fileTree(dir: 'libs', include: 'polar-ble-sdk.aar')
+  compileOnly 'io.reactivex.rxjava2:rxjava:2.2.11'
+  compileOnly 'io.reactivex.rxjava2:rxandroid:2.1.1'
 }
