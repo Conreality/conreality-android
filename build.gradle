@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-  implementation fileTree(dir: 'libs', include: ['*.jar'])
+  compileOnly fileTree(dir: 'libs', include: '*.jar')
 
   // See: https://developer.android.com/jetpack/androidx/releases/core
   implementation 'androidx.core:core:1.0.2'
@@ -55,4 +55,7 @@ dependencies {
 
   // See: https://developers.google.com/android/guides/setup
   implementation 'com.google.android.gms:play-services-nearby:17.0.0'
+
+  // See: https://github.com/AltBeacon/android-beacon-library/releases
+  implementation 'org.altbeacon:android-beacon-library:2.16.2'
 }
