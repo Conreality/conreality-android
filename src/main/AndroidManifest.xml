@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="org.conreality.sdk.android">
   <application>
+    <service android:name=".BeaconService"/>
     <service android:name=".HeadsetService"/>
     <service android:name=".PeerService"/>
   </application>
