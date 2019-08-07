@@ -2,7 +2,6 @@
 
 package org.conreality.sdk.android;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -20,8 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 /** PeerService */
-public final class PeerService extends Service {
-  private static final String TAG = "PeerService";
+public final class PeerService extends ConrealityService {
 
   /** Bind to the service, creating it if needed. */
   public static boolean bind(final @NonNull Context context,
@@ -45,20 +43,20 @@ public final class PeerService extends Service {
   private final @NonNull IBinder binder = new LocalBinder();
   private @Nullable PeerMesh peerMesh;
 
-  /** Implements Service#onBind(). */
+  /** Implements android.app.Service#onBind(). */
   @Override
   public @NonNull IBinder onBind(final @NonNull Intent intent) {
     return this.binder;
   }
 
-  /** Implements Service#onCreate(). */
+  /** Implements android.app.Service#onCreate(). */
   @Override
   public void onCreate() {
     Log.i(TAG, "Created the bound service.");
     this.peerMesh = new PeerMesh(this);
   }
 
-  /** Implements Service#onDestroy(). */
+  /** Implements android.app.Service#onDestroy(). */
   @Override
   public void onDestroy() {
     Log.d(TAG, "Terminating the bound service...");
@@ -67,21 +65,6 @@ public final class PeerService extends Service {
       this.peerMesh = null;
     }
     Log.i(TAG, "Terminated the bound service.");
-  }
-
-  /** Implements Service#onStartCommand(). */
-  @Override
-  public int onStartCommand(final @NonNull Intent intent, final int flags, final int startID) {
-    assert(intent != null);
-
-    final String action = (intent != null) ? intent.getAction() : null;
-    if (Log.isLoggable(TAG, Log.DEBUG)) {
-      Log.d(TAG, String.format("PeerService.onStartCommand: intent=%s flags=%d startID=%d action=%s", intent, flags, startID, action));
-    }
-    switch (action) {
-      default:
-    }
-    return START_REDELIVER_INTENT;
   }
 
   public void start() {

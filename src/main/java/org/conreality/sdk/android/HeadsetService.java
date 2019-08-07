@@ -2,7 +2,6 @@
 
 package org.conreality.sdk.android;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -23,8 +22,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /** HeadsetService */
-public final class HeadsetService extends Service implements TextToSpeech.OnInitListener {
-  private static final String TAG = "ConrealitySDK";
+public final class HeadsetService extends ConrealityService implements TextToSpeech.OnInitListener {
   private static final String TTS_ENGINE = "com.google.android.tts";
 
   /** Bind to the service, creating it if needed. */
@@ -51,14 +49,14 @@ public final class HeadsetService extends Service implements TextToSpeech.OnInit
   private @Nullable Bundle ttsParams;
   private @Nullable List<String> ttsQueue = new ArrayList<String>();
 
-  /** Implements Service#onBind(). */
+  /** Implements android.app.Service#onBind(). */
   @Override
   public @NonNull IBinder onBind(final @NonNull Intent intent) {
     assert(intent != null);
     return this.binder;
   }
 
-  /** Implements Service#onCreate(). */
+  /** Implements android.app.Service#onCreate(). */
   @Override
   public void onCreate() {
     Log.i(TAG, "Created the bound service.");
@@ -66,7 +64,7 @@ public final class HeadsetService extends Service implements TextToSpeech.OnInit
     this.ttsParams = new Bundle();
   }
 
-  /** Implements Service#onDestroy(). */
+  /** Implements android.app.Service#onDestroy(). */
   @Override
   public void onDestroy() {
     Log.d(TAG, "Terminating the bound service...");
@@ -81,7 +79,7 @@ public final class HeadsetService extends Service implements TextToSpeech.OnInit
     Log.i(TAG, "Terminated the bound service.");
   }
 
-  /** Implements Service#onStartCommand(). */
+  /** Implements android.app.Service#onStartCommand(). */
   @Override
   public int onStartCommand(final @NonNull Intent intent, final int flags, final int startID) {
     assert(intent != null);
