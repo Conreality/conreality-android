@@ -59,6 +59,7 @@ public final class HeadsetService extends ConrealityService implements TextToSpe
   /** Implements android.app.Service#onCreate(). */
   @Override
   public void onCreate() {
+    super.onCreate();
     Log.i(TAG, "Created the bound service.");
     this.ttsEngine = new TextToSpeech(this, this, TTS_ENGINE);
     this.ttsParams = new Bundle();
@@ -67,6 +68,7 @@ public final class HeadsetService extends ConrealityService implements TextToSpe
   /** Implements android.app.Service#onDestroy(). */
   @Override
   public void onDestroy() {
+    super.onDestroy();
     Log.d(TAG, "Terminating the bound service...");
     if (this.ttsEngine != null) {
       this.ttsEngine.shutdown();

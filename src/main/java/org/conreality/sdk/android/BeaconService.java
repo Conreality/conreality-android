@@ -63,6 +63,7 @@ public final class BeaconService extends ConrealityService implements BeaconCons
   /** Implements android.app.Service#onCreate(). */
   @Override
   public void onCreate() {
+    super.onCreate();
     Log.i(TAG, "Created the bound service.");
   }
 
@@ -84,6 +85,7 @@ public final class BeaconService extends ConrealityService implements BeaconCons
   /** Implements android.app.Service#onDestroy(). */
   @Override
   public void onDestroy() {
+    super.onDestroy();
     Log.d(TAG, "Terminating the bound service...");
     if (this.beaconManager != null) {
       this.beaconManager.unbind(this);

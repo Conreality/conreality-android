@@ -52,6 +52,7 @@ public final class PeerService extends ConrealityService {
   /** Implements android.app.Service#onCreate(). */
   @Override
   public void onCreate() {
+    super.onCreate();
     Log.i(TAG, "Created the bound service.");
     this.peerMesh = new PeerMesh(this);
   }
@@ -59,6 +60,7 @@ public final class PeerService extends ConrealityService {
   /** Implements android.app.Service#onDestroy(). */
   @Override
   public void onDestroy() {
+    super.onDestroy();
     Log.d(TAG, "Terminating the bound service...");
     if (this.peerMesh != null) {
       this.peerMesh.stop();

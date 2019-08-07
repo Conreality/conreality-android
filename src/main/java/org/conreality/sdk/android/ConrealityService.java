@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -23,10 +24,12 @@ public abstract class ConrealityService extends Service implements DefaultLifecy
   }
 
   /** Implements android.app.Service#onCreate(). */
+  @CallSuper
   @Override
   public void onCreate() {}
 
   /** Implements android.app.Service#onDestroy(). */
+  @CallSuper
   @Override
   public void onDestroy() {}
 
