@@ -26,23 +26,23 @@ public final class PolarPulseSource extends PulseSource {
 
     this.api = PolarBleApiDefaultImpl.defaultImplementation(context, PolarBleApi.FEATURE_HR);
     this.api.setAutomaticReconnection(true);
-    this.api.setApiCallback(callbacks);
+    this.api.setApiCallback(apiCallbacks);
 
     Log.d(TAG, "Discovering Polar devices...");
-    final Disposable result = this.api.autoConnectToDevice(-60/*dBm*/, "180D", null).subscribe(
-      new Action() {
-        @Override
-        public void run() throws Exception {
-          Log.i(TAG, "Discovered a Polar device, attempting to connect...");
-        }
-      },
-      new Consumer<Throwable>() {
-        @Override
-        public void accept(final Throwable throwable) throws Exception {
-          Log.e(TAG, "Failed to discover Polar devices.", throwable);
-        }
-      }
-    );
+    final Disposable subscription = this.api.autoConnectToDevice(-60/*dBm*/, "180D", null)
+        .subscribe(
+            new Action() {
+              @Override
+              public void run() throws Exception {
+                Log.i(TAG, "Discovered a Polar device, attempting to connect...");
+              }
+            },
+            new Consumer<Throwable>() {
+              @Override
+              public void accept(final Throwable throwable) throws Exception {
+                Log.w(TAG, "Unable to discover Polar devices.", throwable);
+              }
+            });
   }
 
   /** Implements io.reactivex.disposables.Disposable#dispose(). */
@@ -64,7 +64,7 @@ public final class PolarPulseSource extends PulseSource {
     }
   }
 
-  private final @NonNull PolarBleApiCallback callbacks = new PolarBleApiCallback() {
+  private final @NonNull PolarBleApiCallback apiCallbacks = new PolarBleApiCallback() {
     /** Implements polar.com.sdk.api.PolarBleApiCallback#deviceConnecting(). */
     @Override
     public void deviceConnecting(final @NonNull PolarDeviceInfo device) {
