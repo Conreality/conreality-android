@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import androidx.annotation.NonNull;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -36,8 +37,12 @@ public final class ConrealitySDK {
   /** Initializes the Conreality SDK for Android. */
   public static void init(final @NonNull Context context) {
     Objects.requireNonNull(context);
-    if (!initialized.getAndSet(true)) {
-      // TODO
+
+    if (initialized.getAndSet(true)) return;
+
+    // Initialize the ThreeTenABP library:
+    if (ConrealitySDK.class.getClassLoader().getResource("com/jakewharton/threetenabp/AndroidThreeTen.class") != null) {
+      AndroidThreeTen.init(context);
     }
   }
 }
