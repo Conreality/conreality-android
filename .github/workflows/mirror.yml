@@ -1,0 +1,16 @@
+# See: https://help.github.com/en/articles/workflow-syntax-for-github-actions
+name: Mirror
+on: push
+jobs:
+  mirrorToGitLab:
+    name: Mirror to GitLab
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Push to GitLab
+      uses: spyoungtech/mirror-action@master
+      env:
+        GIT_USERNAME: artob
+        GIT_PASSWORD: ${{ secrets.GITLAB_PASSWORD }}
+      with:
+        args: https://gitlab.com/conreality/conreality-android.git
