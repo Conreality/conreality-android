@@ -1,9 +1,8 @@
 name: Android CI
-
-on: [push]
-
+on: push
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -11,7 +10,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         version: 1.8
-    - name: Download Polar SDK
+    - name: Download the Polar SDK
       run: make libs/polar-ble-sdk.aar
     - name: Build with Gradle
       run: ./gradlew build
