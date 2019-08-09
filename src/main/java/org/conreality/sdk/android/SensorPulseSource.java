@@ -35,6 +35,12 @@ public final class SensorPulseSource extends PulseSource {
     }
   }
 
+  /** Implements org.conreality.sdk.android.PulseSource#isAvailable(). */
+  @Override
+  public boolean isAvailable() {
+    return this.sensor != null;
+  }
+
   /** Implements io.reactivex.disposables.Disposable#dispose(). */
   @Override
   public void dispose() {

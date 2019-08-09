@@ -23,6 +23,9 @@ public abstract class PulseSource implements Disposable, ObservableOnSubscribe<F
     assert(context != null);
   }
 
+  /** Determines whether this pulse source is usable. */
+  public abstract boolean isAvailable();
+
   /** Implements io.reactivex.disposables.Disposable#isDisposed(). */
   @Override
   public boolean isDisposed() {

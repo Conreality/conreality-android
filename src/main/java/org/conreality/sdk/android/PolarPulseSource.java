@@ -45,6 +45,12 @@ public final class PolarPulseSource extends PulseSource {
             });
   }
 
+  /** Implements org.conreality.sdk.android.PulseSource#isAvailable(). */
+  @Override
+  public boolean isAvailable() {
+    return this.deviceID != null;
+  }
+
   /** Implements io.reactivex.disposables.Disposable#dispose(). */
   @Override
   public void dispose() {

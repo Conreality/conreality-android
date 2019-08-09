@@ -51,8 +51,13 @@ public final class PulseService extends ConrealityService {
   public void onCreate() {
     super.onCreate();
 
+    Log.d(TAG, "Creating the pulse service...");
+    this.source = new SensorPulseSource(this);
+    if (!this.source.isAvailable()) {
+      this.source.dispose();
+      this.source = new PolarPulseSource(this); // FIXME
+    }
     Log.i(TAG, "Created the pulse service.");
-    this.source = new PolarPulseSource(this); // FIXME
   }
 
   /** Implements android.app.Service#onDestroy(). */

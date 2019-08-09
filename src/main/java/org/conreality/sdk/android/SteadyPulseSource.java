@@ -19,6 +19,12 @@ public final class SteadyPulseSource extends PulseSource {
         .subscribe((tick) -> SteadyPulseSource.this.emit(42f));
   }
 
+  /** Implements org.conreality.sdk.android.PulseSource#isAvailable(). */
+  @Override
+  public boolean isAvailable() {
+    return true;
+  }
+
   /** Implements io.reactivex.disposables.Disposable#dispose(). */
   @Override
   public void dispose() {
