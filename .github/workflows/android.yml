@@ -4,14 +4,14 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@master
-    - name: set up JDK 1.8
+    - name: Install JDK 1.8
       uses: actions/setup-java@v1
       with:
         version: 1.8
+    - name: Download Polar SDK
+      run: make libs/polar-ble-sdk.aar
     - name: Build with Gradle
       run: ./gradlew build
