@@ -22,6 +22,7 @@ import android.util.Log;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import io.reactivex.Observable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public final class HeadsetService extends ConrealityService implements Headset {
 
   private final @NonNull IBinder binder = new LocalBinder();
   private final @NonNull HeadsetStatus status = new HeadsetStatus();
+  private final @NonNull EventSource<HeadsetStatus> source = new EventSource<HeadsetStatus>(this);
   private @Nullable AudioManager audioManager;
   private @Nullable BluetoothAdapter bluetoothAdapter;
   private @Nullable BluetoothHeadset bluetoothHeadset;
@@ -64,6 +66,16 @@ public final class HeadsetService extends ConrealityService implements Headset {
 
   public @NonNull HeadsetStatus getStatus() {
     return this.status;
+  }
+
+  protected void sendStatus() {
+    if (this.source != null) {
+      this.source.emit(this.status);
+    }
+  }
+
+  public @NonNull Observable<HeadsetStatus> listen() {
+    return Observable.create(this.source);
   }
 
   /** Implements android.app.Service#onBind(). */
@@ -90,7 +102,7 @@ public final class HeadsetService extends ConrealityService implements Headset {
     if (this.bluetoothAdapter != null && this.bluetoothAdapter.isEnabled()) {
       final boolean ok = this.bluetoothAdapter.getProfileProxy(this, bluetoothListener, BluetoothProfile.HEADSET);
       if (!ok) {
-        Log.e(TAG, "Failed to connect to the Bluetooth headset service.");
+        Log.e(TAG, "Failed to connect to the Bluetooth headset profile proxy.");
       }
     }
 
@@ -245,7 +257,7 @@ public final class HeadsetService extends ConrealityService implements Headset {
         }
         HeadsetService.this.bluetoothHeadset = (BluetoothHeadset)proxy;
         HeadsetService.this.status.hasWirelessHeadset = (proxy.getConnectedDevices().size() > 0); // requires the BLUETOOTH permission
-        //HeadsetService.this.sendStatus(); // TODO
+        HeadsetService.this.sendStatus();
       }
     }
 
@@ -258,7 +270,7 @@ public final class HeadsetService extends ConrealityService implements Headset {
         }
         HeadsetService.this.bluetoothHeadset = null;
         HeadsetService.this.status.hasWirelessHeadset = false;
-        //HeadsetService.this.sendStatus(); // TODO
+        HeadsetService.this.sendStatus();
       }
     }
   };
@@ -270,29 +282,30 @@ public final class HeadsetService extends ConrealityService implements Headset {
     public void onReceive(final @NonNull Context context, final @NonNull Intent intent) {
       assert(context != null);
       assert(intent != null);
+      System.err.println(">>>>>>>>>> onReceive");
 
       switch (intent.getAction()) {
         case AudioManager.ACTION_HEADSET_PLUG: {
           final int state = intent.getIntExtra("state", -1);
           final int microphone = intent.getIntExtra("microphone", -1);
-          if (Log.isLoggable(TAG, Log.DEBUG)) {
+          if (Log.isLoggable(TAG, Log.DEBUG) || true) {
             final String name = intent.getStringExtra("name");
             Log.d(TAG, String.format("Received broadcast: %s state=%d microphone=%d name=%s", intent.toString(), state, microphone, name));
           }
           HeadsetService.this.status.hasWiredHeadset = (state == 1);
           HeadsetService.this.status.hasMicrophone = (microphone == 1);
-          //HeadsetService.this.sendStatus(); // TODO
+          HeadsetService.this.sendStatus();
           break;
         }
 
         case BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED: {
           final int state = intent.getIntExtra(BluetoothProfile.EXTRA_STATE, -1);
-          if (Log.isLoggable(TAG, Log.DEBUG)) {
+          if (Log.isLoggable(TAG, Log.DEBUG) || true) {
             final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             Log.d(TAG, String.format("Received broadcast: %s state=%d device=%s", intent.toString(), state, device.toString()));
           }
           HeadsetService.this.status.hasWirelessHeadset = (state == BluetoothProfile.STATE_CONNECTED);
-          //HeadsetService.this.sendStatus(); // TODO
+          HeadsetService.this.sendStatus();
           if (HeadsetService.this.audioManager != null) {
             if (HeadsetService.this.status.hasWirelessHeadset) {
               HeadsetService.this.audioManager.startBluetoothSco();
@@ -306,7 +319,7 @@ public final class HeadsetService extends ConrealityService implements Headset {
 
         case AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED: {
           final int state = intent.getIntExtra(AudioManager.EXTRA_SCO_AUDIO_STATE, AudioManager.SCO_AUDIO_STATE_ERROR);
-          if (Log.isLoggable(TAG, Log.DEBUG)) {
+          if (Log.isLoggable(TAG, Log.DEBUG) || true) {
             Log.d(TAG, String.format("Received broadcast: %s state=%d", intent.toString(), state));
           }
           switch (state) {
