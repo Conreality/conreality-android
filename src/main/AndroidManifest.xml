@@ -7,4 +7,7 @@
     <service android:name=".PeerService"/>
     <service android:name=".PulseService"/>
   </application>
+
+  <!-- See: https://developer.android.com/reference/android/Manifest.permission#BLUETOOTH -->
+  <uses-permission android:name="android.permission.BLUETOOTH"/>
 </manifest>

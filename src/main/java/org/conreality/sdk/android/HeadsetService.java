@@ -2,6 +2,7 @@
 
 package org.conreality.sdk.android;
 
+import android.bluetooth.BluetoothHeadset;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
@@ -46,6 +47,8 @@ public final class HeadsetService extends ConrealityService {
   }
 
   private final @NonNull IBinder binder = new LocalBinder();
+  private @NonNull HeadsetStatus status = new HeadsetStatus();
+  private @Nullable BluetoothHeadset bluetoothHeadset;
   private @Nullable TextToSpeech ttsEngine;
   private @Nullable Bundle ttsParams;
   private @Nullable List<String> ttsQueue = new ArrayList<String>();
@@ -169,6 +172,36 @@ public final class HeadsetService extends ConrealityService {
         HeadsetService.this.ttsEngine = null;
         HeadsetService.this.ttsParams = null;
         HeadsetService.this.ttsQueue = null;
+      }
+    }
+  };
+
+  private final @NonNull BluetoothProfile.ServiceListener bluetoothListener = new BluetoothProfile.ServiceListener() {
+    /** Implements BluetoothProfile.ServiceListener#onServiceConnected(). */
+    @Override
+    public void onServiceConnected(final int profile, final @NonNull BluetoothProfile proxy) {
+      assert(proxy != null);
+
+      if (profile == BluetoothProfile.HEADSET) {
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+          Log.d(TAG, "Connected to the Bluetooth headset service.");
+        }
+        HeadsetService.this.bluetoothHeadset = (BluetoothHeadset)proxy;
+        HeadsetService.this.status.hasWirelessHeadset = (proxy.getConnectedDevices().size() > 0); // requires the BLUETOOTH permission
+        //HeadsetService.this.sendStatus(); // TODO
+      }
+    }
+
+    /** Implements BluetoothProfile.ServiceListener#onServiceDisconnected(). */
+    @Override
+    public void onServiceDisconnected(final int profile) {
+      if (profile == BluetoothProfile.HEADSET) {
+        if (Log.isLoggable(TAG, Log.INFO)) {
+          Log.i(TAG, "Disconnected from the Bluetooth headset service.");
+        }
+        HeadsetService.this.bluetoothHeadset = null;
+        HeadsetService.this.status.hasWirelessHeadset = false;
+        //HeadsetService.this.sendStatus(); // TODO
       }
     }
   };
