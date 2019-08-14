@@ -22,4 +22,7 @@ public interface Headset {
     Objects.requireNonNull(activity);
     ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO}, 0); // TODO: handle the callback
   }
+
+  /** Synthesizes speech from the given text message. */
+  public boolean speak(final @NonNull String message);
 }
