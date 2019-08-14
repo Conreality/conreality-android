@@ -2,6 +2,7 @@
 
 package org.conreality.sdk.android;
 
+import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -22,7 +23,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /** HeadsetService */
-public final class HeadsetService extends ConrealityService implements TextToSpeech.OnInitListener {
+public final class HeadsetService extends ConrealityService {
   private static final String TTS_ENGINE = "com.google.android.tts";
 
   /** Bind to the service, creating it if needed. */
@@ -61,7 +62,7 @@ public final class HeadsetService extends ConrealityService implements TextToSpe
   public void onCreate() {
     super.onCreate();
     Log.i(TAG, "Created the bound service.");
-    this.ttsEngine = new TextToSpeech(this, this, TTS_ENGINE);
+    this.ttsEngine = new TextToSpeech(this, this.ttsInitListener, TTS_ENGINE);
     this.ttsParams = new Bundle();
   }
 
@@ -97,25 +98,6 @@ public final class HeadsetService extends ConrealityService implements TextToSpe
       }
     }
     return START_REDELIVER_INTENT;
-  }
-
-  /** Implements TextToSpeech.OnInitListener#onInit(). */
-  @Override
-  public void onInit(final int status) {
-    if (status == TextToSpeech.SUCCESS) {
-      Log.d(TAG, "Initialized the speech synthesis engine.");
-      //this.ttsEngine.setOnUtteranceProgressListener(this); // TODO
-      for (final String message : this.ttsQueue) {
-        this._speak(message, TextToSpeech.QUEUE_ADD);
-      }
-      this.ttsQueue.clear();
-    }
-    else {
-      Log.e(TAG, "Failed to initialize the speech synthesis engine.");
-      this.ttsEngine = null;
-      this.ttsParams = null;
-      this.ttsQueue = null;
-    }
   }
 
   /** Plays an audio file. */
@@ -169,4 +151,25 @@ public final class HeadsetService extends ConrealityService implements TextToSpe
     final @NonNull String utteranceID = UUID.randomUUID().toString();
     return this.ttsEngine.speak(message, queueMode, this.ttsParams, utteranceID) == TextToSpeech.SUCCESS;
   }
+
+  private final @NonNull TextToSpeech.OnInitListener ttsInitListener = new TextToSpeech.OnInitListener() {
+    /** Implements TextToSpeech.OnInitListener#onInit(). */
+    @Override
+    public void onInit(final int status) {
+      if (status == TextToSpeech.SUCCESS) {
+        Log.d(TAG, "Initialized the speech synthesis engine.");
+        //HeadsetService.this.ttsEngine.setOnUtteranceProgressListener(this); // TODO
+        for (final String message : HeadsetService.this.ttsQueue) {
+          HeadsetService.this._speak(message, TextToSpeech.QUEUE_ADD);
+        }
+        HeadsetService.this.ttsQueue.clear();
+      }
+      else {
+        Log.e(TAG, "Failed to initialize the speech synthesis engine.");
+        HeadsetService.this.ttsEngine = null;
+        HeadsetService.this.ttsParams = null;
+        HeadsetService.this.ttsQueue = null;
+      }
+    }
+  };
 }
