@@ -120,7 +120,7 @@ public final class PolarPulseSource extends PulseSource {
       if (Log.isLoggable(TAG, Log.DEBUG)) {
         Log.d(TAG, String.format("Received a reading of %d bpm from Polar device %s.", data.hr, deviceID));
       }
-      PolarPulseSource.this.emit(data.hr);
+      PolarPulseSource.this.emit((float)data.hr);
     }
   };
 }
