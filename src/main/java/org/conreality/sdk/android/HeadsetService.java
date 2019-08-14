@@ -332,7 +332,13 @@ public final class HeadsetService extends ConrealityService implements Headset {
             case AudioManager.SCO_AUDIO_STATE_CONNECTED: {
               if (HeadsetService.this.recordingThread == null) {
                 HeadsetService.this.recordingThread = new AudioRecorderThread();
-                HeadsetService.this.recordingThread.start();
+                if (HeadsetService.this.recordingThread.isInitialized()) {
+                  HeadsetService.this.recordingThread.start();
+                }
+                else {
+                  Log.e(TAG, "Failed to start audio recording thread."); // RECORD_AUDIO permission missing?
+                  HeadsetService.this.recordingThread = null;
+                }
               }
               break;
             }

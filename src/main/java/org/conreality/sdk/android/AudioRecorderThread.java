@@ -19,7 +19,7 @@ public final class AudioRecorderThread extends ConrealityThread {
   @Nullable AudioRecord recorder;
 
   public AudioRecorderThread() {
-    super("AudioRecorderThread");
+    super("AudioRecorderThread"); // up to 15 characters shown
 
     final int bufferSize = AudioRecord.getMinBufferSize(AudioConfig.SAMPLE_RATE,
         AudioConfig.CHANNEL_CONFIG, AudioConfig.AUDIO_FORMAT);
@@ -33,10 +33,18 @@ public final class AudioRecorderThread extends ConrealityThread {
         AudioConfig.CHANNEL_CONFIG, AudioConfig.AUDIO_FORMAT, bufferSize);
   }
 
+  public boolean isInitialized() {
+    return this.recorder.getState() == AudioRecord.STATE_INITIALIZED;
+  }
+
   @WorkerThread
   @Override
   public void run() {
     Log.d(TAG, "AudioRecorderThread.start");
+    if (!this.isInitialized()) {
+      throw new AssertionError("AudioRecorderThread instance not initialized");
+    }
+
     Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
 
     try {

@@ -31,7 +31,7 @@ public final class AudioPlayerThread extends ConrealityThread {
   }
 
   public AudioPlayerThread(final @NonNull InputStream input) {
-    super("AudioPlayerThread");
+    super("AudioPlayerThread"); // up to 15 characters shown
 
     this.input = Objects.requireNonNull(input);
 
@@ -73,6 +73,7 @@ public final class AudioPlayerThread extends ConrealityThread {
   @Override
   public void run() {
     Log.d(TAG, "AudioPlayerThread.start");
+
     Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
 
     try {
