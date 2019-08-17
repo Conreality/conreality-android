@@ -23,6 +23,9 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -62,7 +65,7 @@ public final class HeadsetService extends ConrealityService implements Headset {
   private @Nullable TextToSpeech ttsEngine;
   private @Nullable Bundle ttsParams;
   private @Nullable List<String> ttsQueue = new ArrayList<String>();
-  private @Nullable AudioRecorderThread recordingThread;
+  private @Nullable Disposable recorder;
 
   public @NonNull HeadsetStatus getStatus() {
     return this.status;
@@ -126,9 +129,9 @@ public final class HeadsetService extends ConrealityService implements Headset {
     super.onDestroy();
     Log.d(TAG, "Terminating the headset service...");
 
-    if (this.recordingThread != null) {
-      HeadsetService.this.recordingThread.interrupt();
-      HeadsetService.this.recordingThread = null;
+    if (this.recorder != null) {
+      this.recorder.dispose();
+      this.recorder = null;
     }
 
     if (this.ttsEngine != null) {
@@ -330,23 +333,35 @@ public final class HeadsetService extends ConrealityService implements Headset {
             }
             // Audio channel is established
             case AudioManager.SCO_AUDIO_STATE_CONNECTED: {
-              if (HeadsetService.this.recordingThread == null) {
-                HeadsetService.this.recordingThread = new AudioRecorderThread();
-                if (HeadsetService.this.recordingThread.isInitialized()) {
-                  HeadsetService.this.recordingThread.start();
-                }
-                else {
-                  Log.e(TAG, "Failed to start audio recording thread."); // RECORD_AUDIO permission missing?
-                  HeadsetService.this.recordingThread = null;
-                }
-              }
+              HeadsetService.this.recorder = AudioRecorder.record()
+                  .subscribeOn(Schedulers.io())
+                  .observeOn(Schedulers.computation())
+                  .subscribeWith(new DisposableObserver<AudioFrame>() {
+                    @Override
+                    public void onStart() {
+                      System.err.println(">>>>>>>>>>>>> AudioRecorder: onStart"); // DEBUG
+                    }
+                    @Override
+                    public void onNext(final @NonNull AudioFrame frame) {
+                      assert(frame != null);
+                      System.err.println(">>>>>>>>>>>>> AudioRecorder: onNext: " + frame); // DEBUG
+                    }
+                    @Override
+                    public void onError(final @NonNull Throwable error) {
+                      assert(error != null);
+                      System.err.println(">>>>>>>>>>>>> AudioRecorder: onError"); // DEBUG
+                      error.printStackTrace();
+                    }
+                    @Override
+                    public void onComplete() {} // never called, since subscriber already disposed
+                  });
               break;
             }
             // Audio channel is not established
             case AudioManager.SCO_AUDIO_STATE_DISCONNECTED: {
-              if (HeadsetService.this.recordingThread != null) {
-                HeadsetService.this.recordingThread.interrupt();
-                HeadsetService.this.recordingThread = null;
+              if (HeadsetService.this.recorder != null) {
+                HeadsetService.this.recorder.dispose();
+                HeadsetService.this.recorder = null;
               }
               break;
             }

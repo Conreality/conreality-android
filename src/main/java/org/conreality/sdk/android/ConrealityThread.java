@@ -5,7 +5,7 @@ package org.conreality.sdk.android;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-/** AudioRecorderThread */
+/** ConrealityThread */
 public abstract class ConrealityThread extends Thread {
   protected static final String TAG = "ConrealitySDK";
 
