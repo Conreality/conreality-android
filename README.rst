@@ -12,4 +12,4 @@ Conreality Software Development Kit (SDK) for Android
 
 |
 
-https://sdk.conreality.org/android/
+https://sdk.conreality.dev/android/

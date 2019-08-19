@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="org.conreality.sdk.android">
+          package="dev.conreality.sdk.android">
 
   <!-- See: https://developer.android.com/reference/android/Manifest.permission#BLUETOOTH -->
   <uses-permission android:name="android.permission.BLUETOOTH"/>

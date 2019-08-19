@@ -1,4 +1,4 @@
-group 'org.conreality.sdk.android'
+group 'dev.conreality.sdk.android'
 version rootProject.file('VERSION').text.trim()
 
 buildscript {
