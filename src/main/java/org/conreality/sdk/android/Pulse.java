@@ -7,7 +7,8 @@ import io.reactivex.Observable;
 import java.util.concurrent.TimeUnit;
 
 /** Pulse */
-public interface Pulse {
+public final class Pulse {
+  private Pulse() {}
 
   /** Streams heart-rate measurements. */
   public static @NonNull Observable<Float> measure() {
