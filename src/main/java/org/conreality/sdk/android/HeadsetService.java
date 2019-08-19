@@ -333,23 +333,23 @@ public final class HeadsetService extends ConrealityService implements Headset {
             }
             // Audio channel is established
             case AudioManager.SCO_AUDIO_STATE_CONNECTED: {
-              HeadsetService.this.recorder = AudioRecorder.record()
+              HeadsetService.this.recorder = Audio.record()
                   .subscribeOn(Schedulers.io())
                   .observeOn(Schedulers.computation())
                   .subscribeWith(new DisposableObserver<AudioFrame>() {
                     @Override
                     public void onStart() {
-                      System.err.println(">>>>>>>>>>>>> AudioRecorder: onStart"); // DEBUG
+                      System.err.println(">>>>>>>>>>>>> Audio.record: onStart"); // DEBUG
                     }
                     @Override
                     public void onNext(final @NonNull AudioFrame frame) {
                       assert(frame != null);
-                      System.err.println(">>>>>>>>>>>>> AudioRecorder: onNext: " + frame); // DEBUG
+                      System.err.println(">>>>>>>>>>>>> Audio.record: onNext: " + frame); // DEBUG
                     }
                     @Override
                     public void onError(final @NonNull Throwable error) {
                       assert(error != null);
-                      System.err.println(">>>>>>>>>>>>> AudioRecorder: onError"); // DEBUG
+                      System.err.println(">>>>>>>>>>>>> Audio.record: onError"); // DEBUG
                       error.printStackTrace();
                     }
                     @Override

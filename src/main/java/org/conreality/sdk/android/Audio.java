@@ -11,15 +11,15 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import java.nio.ByteBuffer;
 
-/** AudioRecorder */
-public final class AudioRecorder {
+/** Audio */
+public final class Audio {
   private static final String TAG = "ConrealitySDK";
 
-  private AudioRecorder() {}
+  private Audio() {}
 
   public static Observable<AudioFrame> record() {
     return Observable.create((final @NonNull ObservableEmitter<AudioFrame> emitter) -> {
-      Log.d(TAG, "AudioRecorder.start");
+      Log.d(TAG, "Audio.record start");
 
       Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
 
@@ -27,7 +27,7 @@ public final class AudioRecorder {
       final int bufferSize = AudioRecord.getMinBufferSize(AudioConfig.SAMPLE_RATE,
           AudioConfig.CHANNEL_CONFIG, AudioConfig.AUDIO_FORMAT);
       if (Log.isLoggable(TAG, Log.DEBUG)) {
-        Log.d(TAG, "AudioRecorder: bufferSize=" + bufferSize);
+        Log.d(TAG, "Audio.record: bufferSize=" + bufferSize);
       }
       final ByteBuffer buffer = ByteBuffer.allocateDirect(bufferSize);
 
@@ -44,7 +44,7 @@ public final class AudioRecorder {
 
       // Check that the recorder was successfully initialized:
       if (recorder.getState() != AudioRecord.STATE_INITIALIZED) {
-        emitter.onError(new IllegalStateException("AudioRecorder failed to initialize"));
+        emitter.onError(new IllegalStateException("Audio.record failed to initialize"));
         return; // perhaps the RECORD_AUDIO permission is missing?
       }
 
@@ -63,7 +63,7 @@ public final class AudioRecorder {
           buffer.clear();
           final int rc = recorder.read(buffer, buffer.capacity());
           if (rc < AudioRecord.SUCCESS) {
-            throw new IllegalStateException(String.format("AudioRecord#read returned error code %d", rc));
+            throw new IllegalStateException(String.format("Audio.record read returned error code %d", rc));
           }
           if (rc == 0) continue; // skip any empty frames
           if (rc != buffer.capacity()) {
@@ -78,7 +78,7 @@ public final class AudioRecorder {
         return;
       }
       finally {
-        Log.d(TAG, "AudioRecorder.stop");
+        Log.d(TAG, "Audio.record stop");
         try {
           recorder.stop();
         }
